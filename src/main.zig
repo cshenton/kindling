@@ -19,7 +19,7 @@ pub fn main() !void {
     if (gladLoadGLLoader(@ptrCast(GLADloadproc, glfwGetProcAddress)) == 0) return error.GladError;
 
     while (glfwWindowShouldClose(window) == 0) {
-        glClearColor(0.2, 0.3, 0.3, 1.0);
+        glClearColor(0.1, 0.1, 0.2, 1.0);
         glClear(GL_COLOR_BUFFER_BIT);
 
         glfwSwapBuffers(window);

@@ -36,6 +36,7 @@ fn addDeps(step: *LibExeObjStep) void {
 
     step.addLibPath("deps/lib");
     step.addIncludeDir("deps/include");
+    step.addCSourceFile("deps/src/cgltf.c", c_opts);
     //step.addCSourceFile("deps/src/enet.c", c_opts);
     step.addCSourceFile("deps/src/glad.c", c_opts);
     step.addCSourceFile("deps/src/librg.c", c_opts);

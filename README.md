@@ -25,3 +25,19 @@ party packages I often use, these are:
 
 Almost all of these are single header, with the exception of glfw, which I use
 precompiled binaries for.
+
+
+## TODO:
+
+- vector math
+- perspective camera
+- integrate cgltf
+- gradually add support to represent everything in gltf
+    - buffers
+    - textures
+    - cameras
+    - skins
+    - animations
+    - textures
+    - samplers
+    - pbr materials
