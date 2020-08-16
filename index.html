@@ -72,7 +72,7 @@
       canvas.width = window.innerWidth;
       canvas.height = window.innerHeight
 
-      fetchAndInstantiate('main_web.wasm', { env }).then(instance => {
+      fetchAndInstantiate('kindling.wasm', { env }).then(instance => {
           memory = instance.exports.memory;
           instance.exports.onInit();
 

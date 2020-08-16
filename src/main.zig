@@ -1,8 +1,8 @@
 const gl = @import("webgl.zig");
 const wasm = @import("wasm.zig");
 
-const vert_src = @embedFile("shader.vert");
-const frag_src = @embedFile("shader.frag");
+const vert_src = @embedFile("shaders/color.vert");
+const frag_src = @embedFile("shaders/color.frag");
 
 var program: c_uint = undefined;
 var vao: c_uint = undefined;
