@@ -15,7 +15,7 @@ let webglOptions = {
   stencil: true,
 }
 
-gl = $webgl.getContext('webgl2', webglOptions);
+gl = $canvas.getContext('webgl2', webglOptions);
 if (!gl) {
   throw new Error('The browser does not support WebGL 2.0');
 }
@@ -75,11 +75,11 @@ const glCompileShader = (shader) => {
   // error check with info log
 }
 const glCreateProgram = () => {
-  glPrograms.push(gl.CreateProgram());
+  glPrograms.push(gl.createProgram());
   return glPrograms.length - 1;
 }
 const glCreateShader = (type) => {
-  glShaders.push(gl.CreateShader(type));
+  glShaders.push(gl.createShader(type));
   return glShaders.length - 1;
 }
 const glDeleteProgram = (program) => {
@@ -92,12 +92,12 @@ const glDeleteShader = (shader) => {
 }
 const glDetachShader = (program, shader) => gl.detachShader(glPrograms[program], glShaders[shader]);
 const glLinkProgram = (program) => {
-  gl.linkProgram(program);
+  gl.linkProgram(glPrograms[program]);
   if (!gl.getProgramParameter(glPrograms[program], gl.LINK_STATUS)) {
     throw ("Error linking program:" + gl.getProgramInfoLog(glPrograms[program]));
   }
 }
-const glShaderSource = (shader, sourcePtr, sourceLen) => gl.shaderSource(shader, readCharStr(sourcePtr, sourceLen));
+const glShaderSource = (shader, sourcePtr, sourceLen) => gl.shaderSource(glShaders[shader], readCharStr(sourcePtr, sourceLen));
 const glUseProgram = (program) => gl.useProgram(glPrograms[program]);
 const glValidateProgram = (program) => gl.validateProgram(glPrograms[program]);
 
@@ -116,34 +116,40 @@ const glScissor = (x, y, width, height) => gl.scissor(x, y, width, height);
 const glViewport = (x, y, width, height) => gl.viewport(x, y, width, height);
 
 // Writing to the Draw Buffer
-const glDrawArrays = (mode, first, count) => gl.drawArrays(mode, size, count);
+const glDrawArrays = (mode, first, count) => gl.drawArrays(mode, first, count);
 const glDrawElements = (mode, count, type, offset) => gl.drawElements(mode, count, type, offset);
 const glVertexAttribDivisor = (index, divisor) => gl.vertexAttribDivisor(index, divisor);
 const glDrawArraysInstanced = (mode, first, count, instanceCount) => gl.drawArraysInstanced(mode, first, count, instanceCount);
 const glDrawElementsInstanced = (mode, count, type, offset, instanceCount) => gl.drawElementsInstanced(mode, count, type, offset, instanceCount);
 const glDrawRangeElements = (mode, start, end, count, type, offset) => gl.drawRangeElements(mode, start, end, count, type, offset);
 
-// Detect context lost events
-const glIsContextLost = () => gl.isContextLost();
-
 // Uniforms and Attributes
 const glDisableVertexAttribArray = (index) => gl.disableVertexAttribArray(index);
 const glEnableVertexAttribArray = (index) => gl.enableVertexAttribArray(index);
-const glUniform1fv = (location, data) => gl.uniform1fv(location, data);
-const glUniform2fv = (location, data) => gl.uniform2fv(location, data);
-const glUniform3fv = (location, data) => gl.uniform3fv(location, data);
-const glUniform4fv = (location, data) => gl.uniform4fv(location, data);
-const glUniform1iv = (location, data) => gl.uniform1iv(location, data);
-const glUniform2iv = (location, data) => gl.uniform2iv(location, data);
-const glUniform3iv = (location, data) => gl.uniform3iv(location, data);
-const glUniform4iv = (location, data) => gl.uniform4iv(location, data);
-const glUniform1uiv = (location, data) => gl.uniform1uiv(location, data);
-const glUniform2uiv = (location, data) => gl.uniform2uiv(location, data);
-const glUniform3uiv = (location, data) => gl.uniform3uiv(location, data);
-const glUniform4uiv = (location, data) => gl.uniform4uiv(location, data);
-const glUniformMatrix2fv = (location, transpose, data) => gl.uniformMatrix2fv(location, transpose, data);
-const glUniformMatrix3fv = (location, transpose, data) => gl.uniformMatrix2fv(location, transpose, data);
-const glUniformMatrix4fv = (location, transpose, data) => gl.uniformMatrix2fv(location, transpose, data);
+const glUniform1f = (location, x) => gl.uniform1f(location, x);
+const glUniform2fv = (location, x, y) => gl.uniform2fv(location, [x, y]);
+const glUniform3fv = (location, x, y, z) => gl.uniform3fv(location, [x, y, z]);
+const glUniform4fv = (location, x, y, z, w) => gl.uniform4fv(location, [x, y, z, w]);
+const glUniform1i = (location, x) => gl.uniform1i(location, x);
+const glUniform2iv = (location, x, y) => gl.uniform2iv(location, [x, y]);
+const glUniform3iv = (location, x, y, z) => gl.uniform3iv(location, [x, y, z]);
+const glUniform4iv = (location, x, y, z, w) => gl.uniform4iv(location, [x, y, z, w]);
+const glUniform1ui = (location, x) => gl.uniform1ui(location, x);
+const glUniform2uiv = (location, x, y) => gl.uniform2uiv(location, [x, y]);
+const glUniform3uiv = (location, x, y, z) => gl.uniform3uiv(location, [x, y, z]);
+const glUniform4uiv = (location, x, y, z, w) => gl.uniform4uiv(location, [x, y, z, w]);
+const glUniformMatrix2fv = (location, transpose, dataPtr) => {
+  const floats = new Float32Array(memory.buffer, dataPtr, 4);
+  gl.uniformMatrix2fv(location, transpose, floats);
+};
+const glUniformMatrix3fv = (location, transpose, dataPtr) => {
+  const floats = new Float32Array(memory.buffer, dataPtr, 9);
+  gl.uniformMatrix3fv(location, transpose, floats);
+};
+const glUniformMatrix4fv = (location, transpose, dataPtr) => {
+  const floats = new Float32Array(memory.buffer, dataPtr, 16);
+  gl.uniformMatrix4fv(location, transpose, floats);
+};
 const glVertexAttribPointer = (index, size, type, normalized, stride, offset) => gl.vertexAttribPointer(index, size, type, normalized, stride, offset);
 const glVertexAttribIPointer = (index, size, type, stride, offset) => gl.vertexAttribIPointer(index, size, type, stride, offset);
 
@@ -177,7 +183,7 @@ const glClearStencil = (s) => gl.clearStencil(s);
 const glColorMask = (r, g, b, a) => gl.colorMask(r, g, b, a);
 const glDepthMask = (flag) => gl.depthMask(flag);
 const glStencilMask = (mask) => gl.stencilMask(mask);
-const glStencilMaskSeparate = (face) => gl.stencilMaskSeparate(face);
+const glStencilMaskSeparate = (face, mask) => gl.stencilMaskSeparate(face, mask);
 
 // Multiple Render Targets
 // TODO: This
@@ -211,12 +217,9 @@ var webgl = {
   glStencilOpSeparate,
   glCreateBuffer,
   glDeleteBuffer,
-  glGetBufferParameter,
   glBindBuffer,
   glBufferData,
-  bytes,
   glBufferSubData,
-  bytes,
   glAttachShader,
   glCompileShader,
   glCreateProgram,
@@ -228,7 +231,6 @@ var webgl = {
   glShaderSource,
   glUseProgram,
   glValidateProgram,
-  glFoo,
   glCullFace,
   glFrontFace,
   glLineWidth,
@@ -242,18 +244,17 @@ var webgl = {
   glDrawArraysInstanced,
   glDrawElementsInstanced,
   glDrawRangeElements,
-  glIsContextLost,
   glDisableVertexAttribArray,
   glEnableVertexAttribArray,
-  glUniform1fv,
+  glUniform1f,
   glUniform2fv,
   glUniform3fv,
   glUniform4fv,
-  glUniform1iv,
+  glUniform1i,
   glUniform2iv,
   glUniform3iv,
   glUniform4iv,
-  glUniform1uiv,
+  glUniform1ui,
   glUniform2uiv,
   glUniform3uiv,
   glUniform4uiv,
