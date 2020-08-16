@@ -65,3 +65,11 @@ handles to your wasm module (which is what I do with gl objects).
 The great thing about doing things this way is you're not tied to someone else's
 platform bindings. If you need more functionality from the browser, you just
 write it.
+
+
+## Credits
+
+A big thanks to [flooh](http://github.com/floooh) for sokol and
+[raulgrell](https://github.com/raulgrell) for wasm tetris. These both helped me
+understand how wasm platform bindings actually work (and at least as
+importantly, how to get a nice looking fullscreen canvas). 
