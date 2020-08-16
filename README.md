@@ -17,6 +17,7 @@ Provided through a mix of vendored libraries and provided code are:
 Kindling is first and foremost a working build system for a set of quality 3rd
 party packages I often use, these are:
 
+- [`cgtlf`](https://github.com/jkuhlmann/cgltf) (GLTF 3D file format loader)
 - [`glad`](https://github.com/Dav1dde/glad) (OpenGL Loader)
 - [`glfw`](https://github.com/glfw/glfw) (Windowing)
 - [`miniaudio`](https://github.com/dr-soft/miniaudio) (Audio Playback and Capture)

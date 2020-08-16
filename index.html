@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+<html>
+  <head>
+    <meta charset="UTF-8"/>
+    <title>Hello WASM</title>
+    <link rel="icon" type="image/png" href="favicon.png"/>
+    <style type="text/css">
+      body {
+          margin: 0;
+          background-color: black;
+      }
+      .game-title {
+          pointer-events: none;
+          position: absolute;
+          bottom: 10px;
+          margin-top: 0px;
+          padding-left: 10px;
+          color: white;
+          text-decoration: none;
+          z-index: 1;
+          text-align: left;
+          font-family: "Arial Black", Gadget, sans-serif;
+          font-size: 30px;
+      }
+      .game-menu-item {
+          pointer-events: auto;
+          font-size: 18px;
+          padding-left: 10px;
+          font-family: Arial, Helvetica, sans-serif;
+      }
+      .game-menu-link {
+          text-decoration: none;
+          color: white;
+      }
+      .game {
+          position: absolute;
+          top: 0px;
+          left: 0px;
+          margin: 0px;
+          border: 0;
+          width: 100%;
+          height: 100%;
+          overflow: hidden;
+          display: block;
+          image-rendering: optimizeSpeed;
+          image-rendering: -moz-crisp-edges;
+          image-rendering: -o-crisp-edges;
+          image-rendering: -webkit-optimize-contrast;
+          image-rendering: optimize-contrast;
+          image-rendering: crisp-edges;
+          image-rendering: pixelated;
+          -ms-interpolation-mode: nearest-neighbor;
+      }
+    </style>
+  </head>
+  <body style="background:black">
+    <div class="game-title">Hello WASM</div>
+    <canvas class="game" id="canvas" oncontextmenu="event.preventDefault()"></canvas>
+    <script>
+      var $canvas = document.getElementById("canvas");
+    </script>
+    <script src="js/dom.js"></script>
+    <script src="js/webgl_old.js"></script>
+    <script src="js/wasm.js"></script>
+    <script>
+      const env = {
+          ...wasm,
+          //...audio,
+          //...zigdom,
+          ...webgl,
+      }
+
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight
+
+      fetchAndInstantiate('main_web.wasm', { env }).then(instance => {
+          memory = instance.exports.memory;
+          instance.exports.onInit();
+
+          const onAnimationFrame = instance.exports.onAnimationFrame;
+          
+          window.addEventListener('keydown', e => instance.exports.onKeyDown(e.keyCode));
+          window.addEventListener('keyup', e => instance.exports.onKeyUp(e.keyCode));
+          window.addEventListener('mousedown', e => instance.exports.onMouseDown(e.button, e.x, e.y));
+          window.addEventListener('mouseup', e => instance.exports.onMouseUp(e.button, e.x, e.y));
+          window.addEventListener('mousemove', e => instance.exports.onMouseMove(e.x, e.y));
+          window.addEventListener('resize', e => {
+              canvas.width = window.innerWidth;
+              canvas.height = window.innerHeight
+              instance.exports.onResize(canvas.width, canvas.height);
+          });
+
+
+          function step(timestamp) {
+              onAnimationFrame(timestamp);
+              window.requestAnimationFrame(step);
+          }
+
+          window.requestAnimationFrame(step);
+      });
+
+      function fetchAndInstantiate(url, importObject) {
+          return fetch(url)
+              .then(response => response.arrayBuffer())
+              .then(bytes => WebAssembly.instantiate(bytes, importObject))
+              .then(results => results.instance);
+      }
+    </script>
+  </body>
+</html>

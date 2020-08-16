@@ -13,7 +13,7 @@ pub fn build(b: *Builder) void {
     // between Debug, ReleaseSafe, ReleaseFast, and ReleaseSmall.
     const mode = b.standardReleaseOptions();
 
-    const exe = b.addExecutable("kindling", "src/main.zig");
+    const exe = b.addExecutable("kindling", "src/test_main.zig");
     exe.setTarget(target);
     exe.setBuildMode(mode);
     addDeps(exe);
