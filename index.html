@@ -59,15 +59,14 @@
     <script>
       var $canvas = document.getElementById("canvas");
     </script>
-    <script src="js/dom.js"></script>
-    <script src="js/webgl.js"></script>
     <script src="js/wasm.js"></script>
+    <script src="js/webgl.js"></script>
     <script>
       const env = {
           ...wasm,
-          //...audio,
-          //...zigdom,
           ...webgl,
+          // webaudio,
+          // websockets,
       }
 
       canvas.width = window.innerWidth;

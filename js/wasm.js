@@ -1,9 +1,4 @@
-var memory;
-
-const getCanvasWidth = () => $canvas.width;
-const getCanvasHeight = () => $canvas.height;
-const getRandomSeed = () => Math.floor(Math.random() * 2147483647);
-const getRandomString = () => Math.random().toString(36).substring(5, 15) + Math.random().toString(36).substring(5, 15);
+// Helper Functions
 const readCharStr = (ptr, len) => {
     const bytes = new Uint8Array(memory.buffer, ptr, len);
     let s = "";
@@ -12,17 +7,22 @@ const readCharStr = (ptr, len) => {
     }
     return s;
 }
-const consoleLogS = (ptr, len) => console.log(readCharStr(ptr, len));
+
+// Global Variables
+var memory;
+
+// Core Platform Functions
+const getCanvasWidth = () => $canvas.width;
+const getCanvasHeight = () => $canvas.height;
 const consoleLog = (value) => console.log(value);
+const consoleLogString = (ptr, len) => console.log(readCharStr(ptr, len));
 
 var wasm = {
-    consoleLog,
     getCanvasHeight,
     getCanvasWidth,
-    getRandomSeed,
-    getRandomString,
-    consoleLogF: consoleLog,
-    consoleLogI: consoleLog,
-    consoleLogS,
+    consoleLogFloat: consoleLog,
+    consoleLogInt: consoleLog,
+    consoleLogUint: consoleLog,
+    consoleLogString,
     readCharStr,
 }

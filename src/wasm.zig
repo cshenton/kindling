@@ -1,7 +1,6 @@
-pub extern fn getRandomSeed() c_uint;
 pub extern fn getCanvasWidth() c_int;
 pub extern fn getCanvasHeight() c_int;
-pub extern fn getRandomString() [*]const u8;
-pub extern fn consoleLogS(_: [*]const u8, _: c_uint) void;
-pub extern fn consoleLogI(_: c_int) void;
-pub extern fn consoleLogF(_: f32) void;
+pub extern fn consoleLogFloat(_: f32) void;
+pub extern fn consoleLogInt(_: c_int) void;
+pub extern fn consoleLogUint(_: c_uint) void;
+pub extern fn consoleLogString(_: [*]const u8, _: c_uint) void;

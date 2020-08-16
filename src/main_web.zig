@@ -79,7 +79,6 @@ export fn onKeyUp(keyCode: c_int) void {
 
 export fn onMouseDown(button: c_int, x: c_int, y: c_int) void {
     // Need left / right defs
-    wasm.consoleLogS("Mouse Clicked", 13);
 }
 
 export fn onMouseUp(button: c_int, x: c_int, y: c_int) void {
