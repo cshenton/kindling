@@ -55,7 +55,6 @@ const glDeleteBuffer = (buffer) => {
   gl.deleteBuffer(glBuffers[buffer]);
   glBuffers[buffer] = undefined;
 }
-const glGetBufferParameter = (target, pname) => gl.getBufferParameter(target, pname);
 const glBindBuffer = (target, buffer) => gl.bindBuffer(target, glBuffers[buffer]);
 const glBufferData = (target, size, ptr, usage) => {
   const bytes = new Uint8Array(memory.buffer, ptr, size);
