@@ -87,7 +87,7 @@ const glDeleteProgram = (program) => {
   glPrograms[program] = undefined;
 }
 const glDeleteShader = (shader) => {
-  gl.deleteShader(shader);
+  gl.deleteShader(glShaders[shader]);
   glShaders[shader] = undefined;
 }
 const glDetachShader = (program, shader) => gl.detachShader(glPrograms[program], glShaders[shader]);

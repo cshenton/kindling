@@ -3,6 +3,7 @@ const allocator = std.heap.page_allocator;
 const json = std.json;
 
 const Gltf = @import("gltf.zig").Gltf;
+const Program = @import("program.zig").Program;
 
 const gl = @import("webgl.zig");
 const wasm = @import("wasm.zig");
@@ -15,7 +16,7 @@ const gltf_bin = @embedFile("assets/buster_drone/scene.bin");
 
 
 pub const Game = struct {
-    program: c_uint,
+    program: Program,
     vao: c_uint,
     vbo: c_uint,
     time_location: c_uint,
@@ -28,21 +29,8 @@ pub const Game = struct {
         const height = wasm.getCanvasHeight();
         gl.viewport(0, 0, width, height);
 
-        // Create a bunch of buffer views
-
         // Create Shader Program
-        const vert_shader = gl.createShader(gl.VERTEX_SHADER);
-        gl.shaderSource(vert_shader, vert_src, vert_src.len);
-        gl.compileShader(vert_shader);
-
-        const frag_shader = gl.createShader(gl.FRAGMENT_SHADER);
-        gl.shaderSource(frag_shader, frag_src, frag_src.len);
-        gl.compileShader(frag_shader);
-
-        const program = gl.createProgram();
-        gl.attachShader(program, vert_shader);
-        gl.attachShader(program, frag_shader);
-        gl.linkProgram(program);
+        const program = Program.init(vert_src, frag_src);
 
         // Vertex data
         const vertices = [_]f32{
@@ -68,7 +56,7 @@ pub const Game = struct {
         gl.enableVertexAttribArray(1);
 
         // Get uniform locations
-        const time_location = gl.getUniformLocation(program, "time", 4);
+        const time_location = program.getUniformLocation("time");
 
         // Load gltf from embedded file
         const gltf = try Gltf.fromBytes(allocator, gltf_json, (&[_][]const u8 { gltf_bin })[0..]);
@@ -90,7 +78,7 @@ pub const Game = struct {
         const time = @intToFloat(f32, now_time) / 1000.0;
 
         gl.bindVertexArray(self.vao);
-        gl.useProgram(self.program);
+        self.program.use();
         gl.uniform1f(self.time_location, time);
         gl.drawArrays(gl.TRIANGLES, 0, 6);
     }
