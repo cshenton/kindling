@@ -27,7 +27,7 @@ extern fn glDeleteProgram(_: c_uint) void;
 extern fn glDeleteShader(_: c_uint) void;
 extern fn glDetachShader(_: c_uint, _: c_uint) void;
 extern fn glLinkProgram(_: c_uint) void;
-extern fn glShaderSource(_: c_uint, _: [*]const u8 , _: c_uint) void;
+extern fn glShaderSource(_: c_uint, _: [*]const u8, _: c_uint) void;
 extern fn glUseProgram(_: c_uint) void;
 extern fn glValidateProgram(_: c_uint) void;
 
@@ -56,7 +56,8 @@ extern fn glDrawRangeElements(_: c_uint, _: c_uint, _: c_uint, _: c_uint, _: c_u
 // Uniforms and Attributes
 extern fn glDisableVertexAttribArray(_: c_uint) void;
 extern fn glEnableVertexAttribArray(_: c_uint) void;
-extern fn glUniform1f(_: c_int, _: f32) void;
+extern fn glGetUniformLocation(_: c_uint, _: [*]const u8, _: c_int) c_uint;
+extern fn glUniform1f(_: c_uint, _: f32) void;
 extern fn glUniform2fv(_: c_int, _: f32, _: f32) void;
 extern fn glUniform3fv(_: c_int, _: f32, _: f32, _: f32) void;
 extern fn glUniform4fv(_: c_int, _: f32, _: f32, _: f32, _: f32) void;
@@ -147,7 +148,7 @@ const GL_TEXTURE0: c_uint = 33984;
 const GL_BLEND: c_uint = 3042;
 const GL_SRC_ALPHA: c_uint = 770;
 const GL_ONE_MINUS_SRC_ALPHA: c_uint = 771;
-const GL_ONE: c_uint= 1;
+const GL_ONE: c_uint = 1;
 const GL_NO_ERROR = 0;
 const GL_FALSE = 0;
 const GL_TRUE = 1;
@@ -200,6 +201,7 @@ pub const drawElementsInstanced = glDrawElementsInstanced;
 pub const drawRangeElements = glDrawRangeElements;
 pub const disableVertexAttribArray = glDisableVertexAttribArray;
 pub const enableVertexAttribArray = glEnableVertexAttribArray;
+pub const getUniformLocation = glGetUniformLocation;
 pub const uniform1f = glUniform1f;
 pub const uniform2fv = glUniform2fv;
 pub const uniform3fv = glUniform3fv;

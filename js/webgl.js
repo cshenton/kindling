@@ -126,7 +126,11 @@ const glDrawRangeElements = (mode, start, end, count, type, offset) => gl.drawRa
 // Uniforms and Attributes
 const glDisableVertexAttribArray = (index) => gl.disableVertexAttribArray(index);
 const glEnableVertexAttribArray = (index) => gl.enableVertexAttribArray(index);
-const glUniform1f = (location, x) => gl.uniform1f(location, x);
+const glGetUniformLocation = (program, namePtr, nameLen) => {
+  glUniformLocations.push(gl.getUniformLocation(glPrograms[program], readCharStr(namePtr, nameLen)));
+  return glUniformLocations.length - 1;
+}
+const glUniform1f = (location, x) => gl.uniform1f(glUniformLocations[location], x);
 const glUniform2fv = (location, x, y) => gl.uniform2fv(location, [x, y]);
 const glUniform3fv = (location, x, y, z) => gl.uniform3fv(location, [x, y, z]);
 const glUniform4fv = (location, x, y, z, w) => gl.uniform4fv(location, [x, y, z, w]);
@@ -246,6 +250,7 @@ var webgl = {
   glDrawRangeElements,
   glDisableVertexAttribArray,
   glEnableVertexAttribArray,
+  glGetUniformLocation,
   glUniform1f,
   glUniform2fv,
   glUniform3fv,
