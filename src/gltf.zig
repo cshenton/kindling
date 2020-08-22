@@ -118,15 +118,56 @@ pub const PerspectiveCamera = struct {
     znear: f32,
     zfar: f32,
 
-    pub fn fromJson(camera: json.ObjectMap) !Camera {
+    pub fn fromJson(cam: json.ObjectMap) !PerspectiveCamera {
+        const aspect_ratio = if (cam.get("aspectRatio")) |d| @floatCast(f32, d.Float) else return error.BadGltf;
+        const yfov = if (cam.get("yfov")) |d| @floatCast(f32, d.Float) else return error.BadGltf;
+        const znear = if (cam.get("znear")) |d| @floatCast(f32, d.Float) else return error.BadGltf;
+        const zfar = if (cam.get("zfar")) |d| @floatCast(f32, d.Float) else 1000.0;
 
+        return PerspectiveCamera{
+            .aspect_ratio = aspect_ratio,
+            .yfov = yfov,
+            .znear = znear,
+            .zfar = zfar,
+        };
     }
-}
-
-pub const Camera = struct {
-
 };
 
+pub const OrthoCamera = struct {
+    xmag: f32,
+    ymag: f32,
+    zfar: f32,
+    znear: f32,
+
+    pub fn fromJson(cam: json.ObjectMap) !OrthoCamera {
+        const xmag = if (cam.get("xmag")) |d| @floatCast(f32, d.Float) else return error.BadGltf;
+        const ymag = if (cam.get("ymag")) |d| @floatCast(f32, d.Float) else return error.BadGltf;
+        const znear = if (cam.get("znear")) |d| @floatCast(f32, d.Float) else return error.BadGltf;
+        const zfar = if (cam.get("zfar")) |d| @floatCast(f32, d.Float) else return error.BadGltf;
+
+        return OrthoCamera{
+            .xmag = xmag,
+            .ymag = ymag,
+            .znear = znear,
+            .zfar = zfar,
+        };
+    }
+};
+
+pub const Camera = union(enum) {
+    perspective: PerspectiveCamera,
+    orthographic: OrthoCamera,
+
+    pub fn fromJson(cam: json.ObjectMap) !Camera {
+        if (cam.get("perspective")) |c| {
+            return Camera{ .perspective = try PerspectiveCamera.fromJson(c.Object) };
+        }
+        if (cam.get("orthographic")) |c| {
+            return Camera { .orthographic = try OrthoCamera.fromJson(c.Object) };
+        }
+        return error.BadGltf;
+    }
+};
 
 pub const Scene = struct {};
 pub const Node = struct {};
@@ -141,23 +182,13 @@ pub const Animation = struct {};
 pub const Gltf = struct {
     allocator: *Allocator,
 
-    buffer_views: []BufferView,
     accessors: []Accessor,
+    buffer_views: []BufferView,
+    cameras: []Camera,
     meshes: []Mesh,
 
     pub fn fromJson(allocator: *Allocator, gltf: json.ObjectMap, buffers: []const []const u8) !Gltf {
-        const gltf_buffer_views = if (gltf.get("bufferViews")) |d| d.Array.items else return error.BadGltf;
         const gltf_accessors = if (gltf.get("accessors")) |d| d.Array.items else return error.BadGltf;
-        const gltf_meshes = if (gltf.get("meshes")) |d| d.Array.items else return error.BadGltf;
-
-        var buffer_views = try allocator.alloc(BufferView, gltf_buffer_views.len);
-        {
-            var i: usize = 0;
-            while (i < buffer_views.len) : (i += 1) {
-                buffer_views[i] = BufferView.fromJson(gltf_buffer_views[i].Object, buffers);
-            }
-        }
-
         var accessors = try allocator.alloc(Accessor, gltf_accessors.len);
         {
             var i: usize = 0;
@@ -166,6 +197,25 @@ pub const Gltf = struct {
             }
         }
 
+        const gltf_buffer_views = if (gltf.get("bufferViews")) |d| d.Array.items else return error.BadGltf;
+        var buffer_views = try allocator.alloc(BufferView, gltf_buffer_views.len);
+        {
+            var i: usize = 0;
+            while (i < buffer_views.len) : (i += 1) {
+                buffer_views[i] = BufferView.fromJson(gltf_buffer_views[i].Object, buffers);
+            }
+        }
+
+        const gltf_cameras = if (gltf.get("cameras")) |d| d.Array.items else return error.BadGltf;
+        var cameras = try allocator.alloc(Camera, gltf_cameras.len);
+        {
+            var i: usize = 0;
+            while (i < cameras.len) : (i += 1) {
+                cameras[i] = try Camera.fromJson(gltf_cameras[i].Object);
+            }
+        }
+
+        const gltf_meshes = if (gltf.get("meshes")) |d| d.Array.items else return error.BadGltf;
         var meshes = try allocator.alloc(Mesh, gltf_meshes.len);
         {
             var i: usize = 0;
@@ -174,10 +224,12 @@ pub const Gltf = struct {
             }
         }
 
+
         return Gltf{
             .allocator = allocator,
-            .buffer_views = buffer_views,
             .accessors = accessors,
+            .buffer_views = buffer_views,
+            .cameras = cameras,
             .meshes = meshes,
         };
     }
